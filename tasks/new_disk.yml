@@ -1,0 +1,20 @@
+---
+- name: Format the disk
+  filesystem:
+    fstype: "{{ cacheNewDiskFS }}"
+    dev: "{{ cacheNewDisk }}"
+
+- name: Mount the disk
+  mount:
+    path: "{{ cacheDataDir }}"
+    src: "{{ cacheNewDisk }}"
+    fstype: "{{ cacheNewDiskFS }}"
+    state: mounted
+
+- name: Check if writable
+  file:
+    path: "{{ cacheDataDir }}/testfile.txt"
+    state: "{{ item }}"
+  loop:
+    - touch
+    - absent

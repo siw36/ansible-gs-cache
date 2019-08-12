@@ -1,0 +1,13 @@
+---
+cacheDNSImage: lancachenet/lancache-dns:latest
+cacheImage: lancachenet/monolithic:latest
+cacheSSLImage: lancachenet/sniproxy:latest
+
+cacheDataDir: /var/vache
+
+cacheDNS: 1.1.1.1 1.0.0.1
+cacheMemSize: 2000m
+cacheDiskSize: 20000m
+cacheMaxAge: 60d
+
+cacheNewDiskFS: xfs

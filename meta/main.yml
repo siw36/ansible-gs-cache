@@ -1,0 +1,35 @@
+galaxy_info:
+  author: Robin 'siw36' Klussmann
+  description: This role deploys a lancachenet gaming cache based on docker containers
+  company: replicas.io
+
+  license: GPL-3.0-only
+
+  min_ansible_version: 2.6
+
+  platforms:
+    - name: EL
+      versions:
+      - all
+    - name: Fedora
+      versions:
+      - all
+    - name: Debian
+      versions:
+      - all
+    - name: Ubuntu
+      versions:
+      - all
+
+  galaxy_tags:
+    - lancache
+    - lancachenet
+    - steam
+    - origin
+    - uplay
+    - epic
+    - gaming
+    - cache
+
+dependencies:
+  - docker

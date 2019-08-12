@@ -1,0 +1,93 @@
+---
+- name: Check if docker is available
+  shell: docker --version
+  register: statusDocker
+  ignore_errors: true
+
+- name: Fail when docker is not installed
+  fail:
+    msg: "This role expects docker to be already present on the targen machine"
+  when: statusDocker.rc != 0
+
+- name: Ensure firewalld is installed
+  package:
+    name: firewalld
+    state: latest
+
+- name: Start and enable services
+  systemd:
+    name: "{{ item }}"
+    state: started
+    enabled: true
+  loop:
+    - docker
+    - firewalld
+
+- name: Format a new disk for the cache data
+  include_tasks: new_disk.yml
+  when:
+    - cacheNewDisk is defined
+    - cacheNewDisk | lenght > 0
+
+- name: Create the cache data directories
+  file:
+    path: "{{ item }}"
+    state: directory
+    mode: 0770
+    owner: root
+    group: docker
+  loop:
+    - "{{ cacheDataDir }}"
+    - "{{ cacheDataDir }}/logs"
+    - "{{ cacheDataDir }}/data"
+
+- name: Deploy the cache DNS
+  docker_container:
+    name: cache-dns
+    image: "{{ cacheDNSImage }}"
+    restart: yes
+    restart_policy: unless-stopped
+    ports:
+     - "53:53/udp"
+    env:
+      USE_GENERIC_CACHE: "true"
+      LANCACHE_IP: "{{ hostvars[inventory_hostname]['ansible_default_ipv4']['address'] }}"
+      UPSTREAM_DNS: "{{ cacheDNS }}"
+
+- name: Deploy the cache
+  docker_container:
+    name: cache-main
+    image: "{{ cacheImage }}"
+    restart: yes
+    restart_policy: unless-stopped
+    ports:
+     - "80:80"
+    env:
+      CACHE_MEM_SIZE: "{{ cacheMemSize }}"
+      CACHE_DISK_SIZE: "{{ cacheDiskSize }}"
+      CACHE_MAX_AGE: "{{ cacheMaxAge }}"
+      UPSTREAM_DNS: "{{ cacheDNS }}"
+    devices:
+     - "{{ cacheDataDir }}/data:/data/cache:rwo"
+     - "{{ cacheDataDir }}/logs:/data/logs:rwo"
+
+- name: Deploy the cache SSL proxy
+  docker_container:
+    name: cache-ssl
+    image: "{{ cacheSSLImage }}"
+    restart: yes
+    restart_policy: unless-stopped
+    ports:
+     - "443:443"
+
+- name: Open cache ports in firewalld
+  firewalld:
+    port: "{{ item }}"
+    zone: public
+    permanent: yes
+    immediate: yes
+    state: enabled
+  loop:
+    - 80/tcp
+    - 443/tcp
+    - 53/udp

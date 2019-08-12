@@ -1,0 +1,3 @@
+---
+# Set this variable to format the given disk and use it for the lan cache data (expects a raw block device)
+#cacheNewDisk: /dev/sdb
