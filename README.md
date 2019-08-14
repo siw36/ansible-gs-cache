@@ -7,7 +7,7 @@ Requirements
 ------------
 
 This role expects docker to be installed on the target host.  
-I recommend to use the `geerlingguy.docker` ansible role for that.  
+I recommend to use the `geerlingguy.pip` and `geerlingguy.docker` ansible roles for that.  
 
 Role Variables
 --------------
@@ -28,7 +28,8 @@ Role Variables
 Dependencies
 ------------
 
-- `geerlingguy.docker` + the python package `docker-compose`
+- `geerlingguy.pip` + the python package `docker-compose`
+- `geerlingguy.docker`
 
 Example Playbook
 ----------------
@@ -36,9 +37,14 @@ Example Playbook
 Install docker with the dependent pip package, followed by the lancache itself.  
 ```yaml
 - hosts: gs-cache
+  become: true
+  vars:
+    pip_install_packages:
+      - docker-compose
   roles:
-     - { role: geerlingguy.docker, pip_install_packages: { name: docker-compose } }
-     - siw36.ansible_gs_cache
+    - geerlingguy.pip
+    - geerlingguy.docker
+    - ansible-gs-cache
 ```
 License
 -------

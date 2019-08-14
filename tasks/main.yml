@@ -52,7 +52,6 @@
     env:
       USE_GENERIC_CACHE: "true"
       LANCACHE_IP: "{{ hostvars[inventory_hostname]['ansible_default_ipv4']['address'] }}"
-      UPSTREAM_DNS: "{{ cacheDNS }}"
 
 - name: Deploy the cache
   docker_container:
@@ -67,9 +66,9 @@
       CACHE_DISK_SIZE: "{{ cacheDiskSize }}"
       CACHE_MAX_AGE: "{{ cacheMaxAge }}"
       UPSTREAM_DNS: "{{ cacheDNS }}"
-    devices:
-     - "{{ cacheDataDir }}/data:/data/cache:rwo"
-     - "{{ cacheDataDir }}/logs:/data/logs:rwo"
+    volumes:
+     - "{{ cacheDataDir }}/data:/data/cache:rw"
+     - "{{ cacheDataDir }}/logs:/data/logs:rw"
 
 - name: Deploy the cache SSL proxy
   docker_container:
