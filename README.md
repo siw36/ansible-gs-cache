@@ -31,6 +31,12 @@ Dependencies
 - `geerlingguy.pip` + the python package `docker-compose`
 - `geerlingguy.docker`
 
+Get this role (and dependencies)
+------------
+```bash
+ansible-galaxy install --roles-path ./roles/ geerlingguy.pip geerlingguy.docker siw36.ansible_gs_cache
+```
+
 Example Playbook
 ----------------
 
