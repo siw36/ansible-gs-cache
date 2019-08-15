@@ -33,9 +33,9 @@
   file:
     path: "{{ item }}"
     state: directory
-    mode: 0770
+    mode: 0775
     owner: root
-    group: docker
+    group: 33
   loop:
     - "{{ cacheDataDir }}"
     - "{{ cacheDataDir }}/logs"
