@@ -90,3 +90,7 @@
     - 80/tcp
     - 443/tcp
     - 53/udp
+
+- name: Print chache IP address
+  debug:
+    msg: "Cache IP address: {{ hostvars[inventory_hostname]['ansible_default_ipv4']['address'] }}"
